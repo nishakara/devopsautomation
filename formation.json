@@ -1,0 +1,331 @@
+{
+    "Parameters": {
+        "CidrBlockAParameter" : {
+           "Description" : "VPC Cidr",
+           "Type" : "String",
+           "Default": "192.1.0.0/24"
+         },
+         "AvailabilityZoneAParameter": {
+           "Type": "String",
+           "Default": "ap-south-1a",
+           "AllowedValues": [
+              "ap-southeast-1a",
+              "ap-south-1a"
+           ],
+           "Description": "Enter ap-south-1a, ap-southeast-1a Default is ap-south-1a."
+        },
+        "AvailabilityZoneBParameter": {
+           "Type": "String",
+           "Default": "ap-south-1b",
+           "AllowedValues": [
+              "ap-southeast-1b",
+              "ap-south-1b"
+           ],
+           "Description": "Enter ap-south-1a, ap-southeast-1b Default is ap-south-1b."
+        },
+        "PrivateSubnet4Parameter" : {
+           
+           "Description" : "Private Subnet4",
+           "Type" : "String",
+           "Default": "192.1.0.224/27"
+         },
+         "PrivateSubnet1Parameter" : {
+           "Description" : "Private Subnet1",
+           "Type" : "String",
+           "Default": "192.1.0.128/27"
+           
+         },
+         "PrivateSubnet2Parameter" : {
+           "Description" : "Private Subnet2",
+           "Type" : "String",
+           "Default": "192.1.0.160/27"
+         },
+         "PrivateSubnet3Parameter" : {
+           "Description" : "Private Subnet3",
+           "Type" : "String",
+           "Default": "192.1.0.192/27"
+         },
+         
+        
+        "RDSInstanceTypeParameter": {
+           "Type": "String",
+           "Default": "db.t2.micro",
+           "AllowedValues": [
+              "db.m5.large",
+              "db.t2.micro"
+           ],
+           "Description": "Enter db.t2.micro, db.m5.large  Default is db.t2.micro."
+        },
+        "RdsDbInstanceIdentifierParameter" : {
+           "Description" : "RDS Instance Identifier Name",
+           "Default": "nishakaradbnameidentifier",
+           "Type" : "String"
+         },
+         "RdsDbNameParameter" : {
+           "Description" : "RDS Database Name",
+           "Default": "nishakaradbname",
+           "Type" : "String"
+         },
+        "RDSMasterUserNameParameter": {
+           "Description": "The database Master username",
+           "Default": "nishakara",
+           "Type": "String",
+           "MinLength": "1",
+           "MaxLength": "41",
+           "AllowedPattern": "^[a-zA-Z0-9]*$"
+        },
+        "RDSMasterPasswordParameter": {
+           "NoEcho": "true",
+           "Description": "The database Master password",
+           "Default": "nishakara",
+           "Type": "String",
+           "MinLength": "1",
+           "MaxLength": "41",
+           "AllowedPattern": "^[a-zA-Z0-9]*$"
+        }
+        
+     },
+     "Resources": {
+        "CFDevlayoutindexVpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+               "CidrBlock": { "Ref" : "CidrBlockAParameter" },
+               "EnableDnsSupport": true,
+               "EnableDnsHostnames": false,
+               "Tags": [
+                  {
+                     "Key": "Name",
+                     "Value": "CF-Dev-layoutindex VPC"
+                  }
+               ]
+            }
+         },
+         "CFMPrivateS1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+               "VpcId": {
+                  "Ref": "CFDevlayoutindexVpc"
+               },
+               "CidrBlock": { "Ref" : "PrivateSubnet1Parameter" },
+               "AvailabilityZone": {
+                  "Ref": "AvailabilityZoneAParameter"
+               },
+               "Tags": [
+                  {
+                     "Key": "Name",
+                     "Value": "CFlayoutindex-PrivateSubnet1"
+                  }
+               ]
+            }
+         },
+         "CFMPrivateS2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+               "VpcId": {
+                  "Ref": "CFDevlayoutindexVpc"
+               },
+               "CidrBlock": { "Ref" : "PrivateSubnet2Parameter" },
+               "AvailabilityZone": {
+                  "Ref": "AvailabilityZoneBParameter"
+               },
+               "Tags": [
+                  {
+                     "Key": "Name",
+                     "Value": "CFlayoutindex-PrivateSubnet2"
+                  }
+               ]
+            }
+         },
+         "CFMPrivateS3": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+               "VpcId": {
+                  "Ref": "CFDevlayoutindexVpc"
+               },
+               "CidrBlock": { "Ref" : "PrivateSubnet3Parameter" },
+               "AvailabilityZone": {
+                  "Ref": "AvailabilityZoneAParameter"
+               },
+               "Tags": [
+                  {
+                     "Key": "Name",
+                     "Value": "CFlayoutindex-PrivateSubnet3"
+                  }
+               ]
+            }
+         },
+         "CFMPrivateS4": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+               "VpcId": {
+                  "Ref": "CFDevlayoutindexVpc"
+               },
+               "CidrBlock": { "Ref" : "PrivateSubnet4Parameter" },
+               "AvailabilityZone": {
+                  "Ref": "AvailabilityZoneBParameter"
+               },
+               "Tags": [
+                  {
+                     "Key": "Name",
+                     "Value": "CFlayoutindex-PrivateSubnet4"
+                  }
+               ]
+            }
+         },
+         
+      "CFMRouteTable": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+           "Tags": [
+              {
+                 "Key": "Name",
+                 "Value": "CFlayoutindex-RouteTable"
+              }
+           ],
+           "VpcId": {
+              "Ref": "CFDevlayoutindexVpc"
+           }
+        }
+     },
+     "CFMRouteTablePrivateSubnet1Association": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+           "SubnetId": {
+              "Ref": "CFMPrivateS1"
+           },
+           "RouteTableId": {
+              "Ref": "CFMRouteTable"
+           }
+        }
+     },
+     "CFMRouteTablePrivateSubnet2Association": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+           "SubnetId": {
+              "Ref": "CFMPrivateS2"
+           },
+           "RouteTableId": {
+              "Ref": "CFMRouteTable"
+           }
+        }
+     },
+     "CFMRouteTablePrivateSubnet4Association": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+           "SubnetId": {
+              "Ref": "CFMPrivateS4"
+           },
+           "RouteTableId": {
+              "Ref": "CFMRouteTable"
+           }
+        }
+     },
+     "CFMDevRDSSecurityGroup1": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+           "GroupDescription": "Security Group For RDS created by using CF",
+           "VpcId": {
+              "Ref": "CFDevlayoutindexVpc"
+           },
+           "SecurityGroupIngress": [
+              {
+                 "IpProtocol": "tcp",
+                 "FromPort": "5432",
+                 "ToPort": 5432,
+                 "CidrIp": "0.0.0.0/0"
+              },
+              {
+                 "IpProtocol": "tcp",
+                 "FromPort": "5432",
+                 "ToPort": 5432,
+                 "CidrIp": "172.26.34.217/32"
+              }
+           ],
+           "Tags": [
+              {
+                 "Key": "Project",
+                 "Value": "CF-Project-layoutindex"
+              },
+              {
+                 "Key": "Name",
+                 "Value": "CFlayoutindex RDS SG"
+              }
+           ]
+        }
+     },
+     "CFMRDSDbInstance": {
+        "Type": "AWS::RDS::DBInstance",
+        "Properties": {
+           "AllocatedStorage": 30,
+           "AllowMajorVersionUpgrade": true,
+           "AutoMinorVersionUpgrade": true,
+           "AvailabilityZone": {
+              "Ref": "AvailabilityZoneAParameter"
+           },
+           "CopyTagsToSnapshot": false,
+           "DBInstanceClass": {
+              "Ref": "RDSInstanceTypeParameter"
+           },
+           "DeletionProtection": false,
+           "Engine": "mysql",
+           "EngineVersion": "8.0.28",
+           "MasterUsername": {
+              "Ref": "RDSMasterUserNameParameter"
+           },
+           "MasterUserPassword": {
+              "Ref": "RDSMasterPasswordParameter"
+           },
+           "MultiAZ": true,
+           "Port": "5432",
+           "PubliclyAccessible": false,
+           "StorageType": "gp2",
+           "Tags": [
+              {
+                 "Key": "Name",
+                 "Value": "CF layoutindex mysql RDS"
+              }
+           ]
+        }
+     }
+     },
+     "Outputs": {
+        
+      "CFDevlayoutindexVpc": {
+        "Description": "VPC for the layoutindex Infra",
+        "Value": {
+           "Ref": "CFDevlayoutindexVpc"
+        },
+        "Export": {
+           "Name": "CF-Dev-layoutindex-VPC"
+        }
+     },
+     "CFMRouteTable": {
+        "Description": "Route Table for the layoutindex Infra",
+        "Value": {
+           "Ref": "CFMRouteTable"
+        },
+        "Export": {
+           "Name": "CFlayoutindex-RouteTable"
+        }
+     },
+     "CFMDevRDSSecurityGroup1": {
+        "Description": "RDS Security Group for the layoutindex Infra",
+        "Value": {
+           "Ref": "CFMDevRDSSecurityGroup1"
+        },
+        "Export": {
+           "Name": "CFlayoutindex-RDS-SG"
+        }
+     },
+     
+     "CFMRDSDbInstance": {
+        "Description": "RDS for the layoutindex Infra",
+        "Value": {
+           "Ref": "CFMRDSDbInstance"
+        },
+        "Export": {
+           "Name": "CF-layoutindex-mysql-RDS"
+        }
+     },
+     }
+}
